@@ -70,6 +70,7 @@ const PhotoGalleryModal = () => {
                         src={gallery.images[currentIndex]}
                         alt={`Photo ${currentIndex + 1}`}
                         fill
+                        unoptimized
                         className="object-contain"
                         priority
                     />
@@ -101,6 +102,7 @@ const PhotoGalleryModal = () => {
                                 src={img}
                                 alt={`Thumbnail ${idx + 1}`}
                                 fill
+                                unoptimized
                                 className="object-cover"
                             />
                         </button>

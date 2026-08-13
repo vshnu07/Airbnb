@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import FavoriteButton from "../FavoriteButton";
@@ -30,11 +31,14 @@ interface PropertyProps {
     markFavorite?: (is_favorite: boolean) => void;
 }
 
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80';
+
 const PropertyListItem: React.FC<PropertyProps> = ({
     property,
     markFavorite
 }) => {
     const router = useRouter();
+    const [imgSrc, setImgSrc] = useState(property.image_url || FALLBACK_IMAGE);
     const isSuperhost = property.landlord?.is_superhost || (property.rating_avg && property.rating_avg >= 4.9);
     const locationDisplay = property.city 
         ? `${property.city}, ${property.country || 'India'}` 
@@ -51,10 +55,12 @@ const PropertyListItem: React.FC<PropertyProps> = ({
             <div className="relative overflow-hidden aspect-[20/19] rounded-2xl bg-gray-100 shadow-sm group-hover:shadow-md transition">
                 <Image
                     fill
-                    src={property.image_url}
+                    src={imgSrc}
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     className="group-hover:scale-105 object-cover transition-transform duration-300 h-full w-full"
                     alt={property.title}
+                    onError={() => setImgSrc(FALLBACK_IMAGE)}
+                    unoptimized
                 />
 
                 {/* Superhost Badge */}

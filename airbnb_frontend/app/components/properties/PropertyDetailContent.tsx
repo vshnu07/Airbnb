@@ -176,6 +176,7 @@ const PropertyDetailContent: React.FC<PropertyDetailContentProps> = ({
                             alt={property.title}
                             fill
                             priority
+                            unoptimized
                             className="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full"
                         />
                         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition"></div>
@@ -193,6 +194,7 @@ const PropertyDetailContent: React.FC<PropertyDetailContentProps> = ({
                                     src={imgUrl}
                                     alt={`${property.title} view ${idx + 2}`}
                                     fill
+                                    unoptimized
                                     className="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full"
                                 />
                                 <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition"></div>
@@ -234,6 +236,7 @@ const PropertyDetailContent: React.FC<PropertyDetailContentProps> = ({
                                 src={property.landlord?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80'}
                                 alt={property.landlord?.name || 'Host avatar'}
                                 fill
+                                unoptimized
                                 className="object-cover"
                             />
                         </Link>
