@@ -1,21 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Categories from "./components/Categories";
 import PropertyList from "./components/properties/PropertyList";
+
+export const dynamic = 'force-dynamic';
 
 export default function Home() {
     const [showMap, setShowMap] = useState(false);
 
     return (
         <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-            {/* Categories & Filter Bar */}
-            <Categories />
+            <Suspense fallback={<div className="h-16 animate-pulse bg-gray-100 rounded-xl" />}>
+                {/* Categories & Filter Bar */}
+                <Categories />
 
-            {/* Properties Grid / Map View */}
-            <div className="mt-6">
-                <PropertyList showMap={showMap} />
-            </div>
+                {/* Properties Grid / Map View */}
+                <div className="mt-6">
+                    <PropertyList showMap={showMap} />
+                </div>
+            </Suspense>
 
             {/* Floating Map / List Toggle Button */}
             <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-30">

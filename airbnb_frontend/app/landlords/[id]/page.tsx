@@ -1,8 +1,11 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import ContactButton from "@/app/components/ContactButton";
 import PropertyList from "@/app/components/properties/PropertyList";
 import apiService from "@/app/services/apiService";
 import { getUserId } from "@/app/lib/actions";
+
+export const dynamic = 'force-dynamic';
 
 const LandlordDetailPage = async ({ params }: { params: { id: string } }) => {
     let hostUser: any = null;
@@ -100,7 +103,9 @@ const LandlordDetailPage = async ({ params }: { params: { id: string } }) => {
                         <p className="text-sm text-gray-500 mt-0.5">Explore available properties hosted by {hostUser.name || 'this host'}.</p>
                     </div>
 
-                    <PropertyList landlord_id={params.id} />
+                    <Suspense fallback={<div className="h-40 bg-gray-50 rounded-2xl animate-pulse" />}>
+                        <PropertyList landlord_id={params.id} />
+                    </Suspense>
                 </div>
             </div>
         </main>

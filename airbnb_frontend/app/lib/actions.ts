@@ -10,7 +10,6 @@ export async function handleRefresh() {
     const refreshToken = await getRefreshToken();
 
     if (!refreshToken) {
-        resetAuthCookies();
         return null;
     }
 
@@ -29,69 +28,96 @@ export async function handleRefresh() {
         const json = await response.json();
 
         if (json.access) {
-            cookies().set('session_access_token', json.access, {
-                httpOnly: true,
-                secure: false,
-                maxAge: 60 * 60, // 60 minutes
-                path: '/'
-            });
+            try {
+                cookies().set('session_access_token', json.access, {
+                    httpOnly: true,
+                    secure: false,
+                    maxAge: 60 * 60, // 60 minutes
+                    path: '/'
+                });
+            } catch (e) {
+                // Ignore cookie set error during RSC render
+            }
 
             return json.access;
         } else {
-            resetAuthCookies();
+            await resetAuthCookies();
         }
     } catch (error) {
-        resetAuthCookies();
+        // Refresh failed
     }
 
     return null;
 }
 
 export async function handleLogin(userId: string, accessToken: string, refreshToken: string) {
-    cookies().set('session_userid', userId, {
-        httpOnly: true,
-        secure: false,
-        maxAge: 60 * 60 * 24 * 7, // One week
-        path: '/'
-    });
+    try {
+        cookies().set('session_userid', userId, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 60 * 60 * 24 * 7, // One week
+            path: '/'
+        });
 
-    cookies().set('session_access_token', accessToken, {
-        httpOnly: true,
-        secure: false,
-        maxAge: 60 * 60, // 60 minutes
-        path: '/'
-    });
+        cookies().set('session_access_token', accessToken, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 60 * 60, // 60 minutes
+            path: '/'
+        });
 
-    cookies().set('session_refresh_token', refreshToken, {
-        httpOnly: true,
-        secure: false,
-        maxAge: 60 * 60 * 24 * 7, // One week
-        path: '/'
-    });
+        cookies().set('session_refresh_token', refreshToken, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 60 * 60 * 24 * 7, // One week
+            path: '/'
+        });
+    } catch (e) {
+        // Ignore in non-action context
+    }
 }
 
 export async function resetAuthCookies() {
-    cookies().set('session_userid', '');
-    cookies().set('session_access_token', '');
-    cookies().set('session_refresh_token', '');
+    try {
+        cookies().set('session_userid', '');
+        cookies().set('session_access_token', '');
+        cookies().set('session_refresh_token', '');
+    } catch (e) {
+        // Ignore cookie modification error during Server Component render
+    }
 }
 
 export async function getUserId() {
-    const userId = cookies().get('session_userid')?.value;
-    return userId ? userId : null;
+    try {
+        const userId = cookies().get('session_userid')?.value;
+        return userId ? userId : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 export async function getAccessToken() {
-    let accessToken = cookies().get('session_access_token')?.value;
+    try {
+        let accessToken = cookies().get('session_access_token')?.value;
 
-    if (!accessToken) {
-        accessToken = (await handleRefresh()) || undefined;
+        if (!accessToken) {
+            const refreshToken = cookies().get('session_refresh_token')?.value;
+            if (refreshToken) {
+                accessToken = (await handleRefresh()) || undefined;
+            }
+        }
+
+        return accessToken || null;
+    } catch (e) {
+        return null;
     }
-
-    return accessToken;
 }
 
 export async function getRefreshToken() {
-    const refreshToken = cookies().get('session_refresh_token')?.value;
-    return refreshToken;
+    try {
+        const refreshToken = cookies().get('session_refresh_token')?.value;
+        return refreshToken || null;
+    } catch (e) {
+        return null;
+    }
 }

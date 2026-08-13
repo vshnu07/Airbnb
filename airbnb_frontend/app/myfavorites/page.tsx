@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import PropertyList from "../components/properties/PropertyList";
 import { getUserId } from "../lib/actions";
-import Link from "next/link";
+
+export const dynamic = 'force-dynamic';
 
 const MyFavoritesPage = async () => {
     const userId = await getUserId();
@@ -25,9 +27,11 @@ const MyFavoritesPage = async () => {
             </div>
 
             <div>
-                <PropertyList 
-                    favorites={true}
-                />
+                <Suspense fallback={<div className="h-40 bg-gray-50 rounded-2xl animate-pulse" />}>
+                    <PropertyList 
+                        favorites={true}
+                    />
+                </Suspense>
             </div>
         </main>
     );
